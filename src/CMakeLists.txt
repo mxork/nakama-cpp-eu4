@@ -100,6 +100,12 @@ endif()
 
 target_link_libraries(nakama-cpp PUBLIC libprotobuf)
 
+IF (WIN32)
+ELSE()
+target_include_directories(nakama-cpp PRIVATE ${THIRD_PARTY_DIR}/patcher)
+target_link_libraries(nakama-cpp PUBLIC ${THIRD_PARTY_DIR}/patcher/libpatcher.a)
+ENDIF()
+
 if(ANDROID)
     target_link_libraries(nakama-cpp PUBLIC log)
 endif()
