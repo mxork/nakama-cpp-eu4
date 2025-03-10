@@ -18,6 +18,8 @@
 
 #include "NHttpClientCppRest.h"
 #include "CppRestUtils.h"
+#include <stdio.h>
+#include "realtime/Patch.h"
 
 namespace Nakama {
 
@@ -75,7 +77,6 @@ NHttpClientCppRest::~NHttpClientCppRest()
 void NHttpClientCppRest::setBaseUri(const std::string& uri)
 {
     _baseUri = FROM_STD_STR(uri);
-
     if (_client && _client->base_uri().to_string() == _baseUri)
     {
         // the same
@@ -262,7 +263,7 @@ NHttpClientCppRest::ReqContextPtr NHttpClientCppRest::popFinishedReq()
 
     if (_finishedRequests.empty())
         return nullptr;
-    
+
     ReqContextPtr ctx = std::move(_finishedRequests.front());
     _finishedRequests.pop_front();
 

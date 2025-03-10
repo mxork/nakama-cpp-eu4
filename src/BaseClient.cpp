@@ -20,6 +20,7 @@
 #include "realtime/NRtClient.h"
 #include "nakama-cpp/realtime/NWebsocketsFactory.h"
 #include "nakama-cpp/log/NLogger.h"
+#include "realtime/Patch.h"
 
 #undef NMODULE_NAME
 #define NMODULE_NAME "Nakama::BaseClient"
@@ -31,7 +32,7 @@ namespace Nakama {
 NRtClientPtr BaseClient::createRtClient(int32_t port, NRtTransportPtr transport)
 {
     RtClientParameters parameters;
-    
+
     parameters.host = _host;
     parameters.port = port;
     parameters.ssl  = _ssl;
@@ -52,8 +53,22 @@ NRtClientPtr BaseClient::createRtClient(const RtClientParameters& parameters, NR
         }
     }
 
-    NRtClientPtr client(new NRtClient(transport, parameters.host, parameters.port, parameters.ssl));
-    return client;
+    if (patcher_loaded() && parameters.host == "eu4.online.paradox-interactive.com") {
+      info("intercepting createRtClient\n");
+      info("  host: %s\n", parameters.host.c_str());
+      info("  port: %d\n", parameters.port);
+      info("  ssl:  %d\n", parameters.ssl);
+      info("replaced with\n");
+      info("  host: %s\n", PATCH_HOST);
+      info("  port: %d\n", PATCH_PORT);
+      info("  ssl:  %d\n", PATCH_SSL);
+
+      NRtClientPtr client(new NRtClient(transport, PATCH_HOST, PATCH_PORT, PATCH_SSL));
+      return client;
+    } else {
+      NRtClientPtr client(new NRtClient(transport, parameters.host, parameters.port, parameters.ssl));
+      return client;
+    }
 }
 
 }

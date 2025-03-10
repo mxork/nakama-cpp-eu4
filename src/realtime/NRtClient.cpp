@@ -21,6 +21,8 @@
 #include "realtime/NRtClientProtocol_Protobuf.h"
 #include "realtime/NRtClientProtocol_Json.h"
 
+#include "Patch.h"
+
 #undef NMODULE_NAME
 #define NMODULE_NAME "NRtClient"
 
@@ -454,6 +456,7 @@ void NRtClient::joinMatch(
             NMatch match;
             assign(match, msg.match());
             successCallback(match);
+            patcher_on_match_join();
         };
     }
     ctx->errorCallback = errorCallback;
