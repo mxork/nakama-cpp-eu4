@@ -113,7 +113,11 @@ void NHttpClientCppRest::request(const NHttpRequest& req, const NHttpResponseCal
             return;
         }
 
-        _client.reset(new http_client(_baseUri));
+        log("client created with validate certificates off");
+        http_client_config config;
+        config.set_validate_certificates(false);
+        auto client = new http_client(_baseUri, config);
+        _client.reset(client);
     }
 
     // Build request URI and start the request.
@@ -147,6 +151,7 @@ void NHttpClientCppRest::request(const NHttpRequest& req, const NHttpResponseCal
 
     std::weak_ptr<NHttpClientCppRestContext> context_wptr(_context);
 
+    debug("sending request: %s\n", request.request_uri().to_string().c_str());
     auto task = _client->request(request);
     // Task-based continuation
     (void) task.then([context_wptr, reqId, hasCallback](pplx::task<http_response> previousTask)
