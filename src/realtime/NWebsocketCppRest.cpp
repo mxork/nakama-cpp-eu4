@@ -75,12 +75,13 @@ void NWebsocketCppRest::connect(const std::string & url, NRtTransportType type)
         web::websockets::client::websocket_client_config config;
 
         config.set_user_agent(std::string("Nakama C++ ") + getNakamaSdkVersion());
-        
+        config.set_validate_certificates(false);
+
         _wsClient.reset(new WsClient(config));
 
         _wsClient->set_message_handler(std::bind(&NWebsocketCppRest::onSocketMessage, this, std::placeholders::_1));
         _wsClient->set_close_handler(std::bind(&NWebsocketCppRest::onClosed, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        
+
         _type = type;
         _disconnectInitiated = false;
 
