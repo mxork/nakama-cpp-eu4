@@ -108,7 +108,19 @@ IF (WIN32)
   target_link_libraries(nakama-cpp PUBLIC libpatcher.dll)
 ELSE()
   target_include_directories(nakama-cpp PRIVATE ${THIRD_PARTY_DIR}/patcher/linux)
-  target_link_libraries(nakama-cpp PUBLIC dl)
+
+  # add_library(libpatcher.so SHARED IMPORTED)
+  target_link_libraries(nakama-cpp PUBLIC "-L${THIRD_PARTY_DIR}/patcher/linux -lpatcher")
+  target_link_options(nakama-cpp PUBLIC "-Wl,-rpath,.")
+
+  # set_property(TARGET libpatcher.so PROPERTY IMPORTED_LOCATION "${THIRD_PARTY_DIR}/patcher/linux/libpatcher.so")
+  # target_link_libraries(nakama-cpp PUBLIC libpatcher.so)
+  # target_link_options(nakama-cpp PUBLIC "-Wl,-rpath,./")
+
+  # :note manually load linux dl because cmal is a pisser
+  # target_include_directories(nakama-cpp PRIVATE ${THIRD_PARTY_DIR}/patcher/linux)
+  # target_link_libraries(nakama-cpp PUBLIC dl)
+
   # we will look for the .so in Patch.cpp
   # target_include_directories(nakama-cpp PRIVATE ${THIRD_PARTY_DIR}/patcher)
   # target_link_libraries(nakama-cpp PUBLIC ${THIRD_PARTY_DIR}/patcher/libpatcher.a)

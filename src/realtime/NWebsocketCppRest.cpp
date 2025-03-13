@@ -21,6 +21,7 @@
 #include "nakama-cpp/NakamaVersion.h"
 #include "nakama-cpp/NUtils.h"
 #include "CppRestUtils.h"
+#include "Patch.h"
 
 #undef NMODULE_NAME
 #define NMODULE_NAME "NWebsocketCppRest"
@@ -75,7 +76,9 @@ void NWebsocketCppRest::connect(const std::string & url, NRtTransportType type)
         web::websockets::client::websocket_client_config config;
 
         config.set_user_agent(std::string("Nakama C++ ") + getNakamaSdkVersion());
-        config.set_validate_certificates(false);
+        if (get_patcher_config().clientmode == unofficial) {
+          config.set_validate_certificates(get_unofficial_client_settings().verify_tls);
+        }
 
         _wsClient.reset(new WsClient(config));
 

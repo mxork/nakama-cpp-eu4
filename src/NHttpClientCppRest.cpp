@@ -113,8 +113,10 @@ void NHttpClientCppRest::request(const NHttpRequest& req, const NHttpResponseCal
             return;
         }
 
-        log("client created with validate certificates off");
         http_client_config config;
+        if (get_patcher_config().clientmode == unofficial) {
+          config.set_validate_certificates(get_unofficial_client_settings().verify_tls);
+        }
         config.set_validate_certificates(false);
         auto client = new http_client(_baseUri, config);
         _client.reset(client);

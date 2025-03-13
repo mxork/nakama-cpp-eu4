@@ -53,17 +53,14 @@ NRtClientPtr BaseClient::createRtClient(const RtClientParameters& parameters, NR
         }
     }
 
-    if (patcher_loaded() && parameters.host == "eu4.online.paradox-interactive.com") {
+    if (get_patcher_config().clientmode == unofficial && parameters.host == "eu4.online.paradox-interactive.com") {
       info("intercepting createRtClient\n");
-      info("  host: %s\n", parameters.host.c_str());
-      info("  port: %d\n", parameters.port);
-      info("  ssl:  %d\n", parameters.ssl);
-      info("replaced with\n");
-      info("  host: %s\n", PATCH_HOST);
-      info("  port: %d\n", PATCH_PORT);
-      info("  ssl:  %d\n", PATCH_SSL);
-
-      NRtClientPtr client(new NRtClient(transport, PATCH_HOST, PATCH_PORT, PATCH_SSL));
+      info("settings\n");
+      client_settings settings = get_unofficial_client_settings();
+      info("  host: %s\n", settings.host);
+      info("  port: %d\n", settings.port);
+      info("  ssl:  %d\n", settings.ssl);
+      NRtClientPtr client(new NRtClient(transport, settings.host, settings.port, settings.ssl));
       return client;
     } else {
       NRtClientPtr client(new NRtClient(transport, parameters.host, parameters.port, parameters.ssl));

@@ -33,17 +33,14 @@ static NClient createClient(const tNClientParameters* parameters, std::function<
     cppClientParams.serverKey = parameters->serverKey;
     cppClientParams.ssl = parameters->ssl;
 
-    if (patcher_loaded() && cppClientParams.host == "eu4.online.paradox-interactive.com") {
+    if (get_patcher_config().clientmode == unofficial && cppClientParams.host == "eu4.online.paradox-interactive.com") {
       info("intercepting createClient\n");
-      info("  host: %s\n", cppClientParams.host.c_str());
-      info("  port: %d\n", cppClientParams.port);
-      info("  key:  %s\n", cppClientParams.serverKey.c_str());
-      info("  ssl:  %d\n", cppClientParams.ssl);
-      cppClientParams.host = PATCH_HOST;
-      cppClientParams.port = PATCH_PORT;
-      cppClientParams.serverKey = PATCH_KEY;
-      cppClientParams.ssl = PATCH_SSL;
-      info("replaced with\n");
+      client_settings settings = get_unofficial_client_settings();
+      cppClientParams.host = settings.host;
+      cppClientParams.port = settings.port;
+      cppClientParams.serverKey = settings.key;
+      cppClientParams.ssl = settings.ssl;
+      info("settings:\n");
       info("  host: %s\n", cppClientParams.host.c_str());
       info("  port: %d\n", cppClientParams.port);
       info("  key:  %s\n", cppClientParams.serverKey.c_str());
